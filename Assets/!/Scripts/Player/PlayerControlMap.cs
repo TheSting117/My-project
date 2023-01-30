@@ -13,22 +13,18 @@ namespace @_.Scripts.Player
 
         public void Jump(InputAction.CallbackContext context)
         {
-            var velocity = rigidbody2D.velocity;
-            if (context.performed)
-                _jumpBufferCounter = jumpBufferTime;
-            else
-                _jumpBufferCounter -= Time.deltaTime;
+            if (context.performed || context.started)
+        {
+            if (!(_coyoteTimeCounter > 0)) return;
+            
+            rigidbody2D.velocity = new Vector2(rigidbody2D.velocity.x, jumpForce);
+        }
 
-            if (_jumpBufferCounter >0f && _coyoteTimeCounter >0f)
-            {
-                velocity = new Vector2(velocity.x, jumpForce);
-                _jumpBufferCounter = 0f;
-            }
-
-            if (!context.canceled || !(rigidbody2D.velocity.y > 0f)) return;
-            velocity = new Vector2(velocity.x, velocity.y * 0.5f);
-            rigidbody2D.velocity = velocity;
-            _coyoteTimeCounter = 0;
+        if (context.canceled && rigidbody2D.velocity.y >0f)
+        {
+            rigidbody2D.velocity = new Vector2(rigidbody2D.velocity.x, 0);
+            _coyoteTimeCounter = 0f;
+        }
         }
         public void Dash(InputAction.CallbackContext context)
         {
